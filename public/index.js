@@ -1,5 +1,6 @@
 const ALLOWED_SITES = [
-    "https://c0delistener.firebaseapp.com/"
+    "https://c0delistener.firebaseapp.com/",
+    "localhost"
 ];
 
 // check referrer
