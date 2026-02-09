@@ -1,3 +1,14 @@
+const ALLOWED_SITES = [
+    "https://c0delistener.firebaseapp.com/"
+];
+
+// check referrer
+const ref = document.referrer || "";
+if (!ALLOWED_SITES.some(site => ref.startsWith(site))) {
+    document.body.innerHTML = "403 Forbidden";
+    throw new Error("Unauthorized site");
+}
+
 "use strict";
 /**
  * @type {HTMLFormElement}
