@@ -1,13 +1,26 @@
 const ALLOWED_SITES = [
-    "https://c0delistener.firebaseapp.com/",
-    "localhost"
+    "https://c0delistener.firebaseapp.com",
+    "http://localhost",
+    "http://127.0.0.1"
 ];
 
-// check referrer
-const ref = document.referrer || "";
-if (!ALLOWED_SITES.some(site => ref.startsWith(site))) {
-    document.body.innerHTML = "403 Forbidden";
-    throw new Error("Unauthorized site");
+// Get the referrer, or set to null if empty
+const ref = document.referrer;
+
+// LOGIC: 
+// 1. If ref is empty (direct visit), allow it.
+// 2. If ref exists, check if it starts with one of our allowed strings.
+const isAllowed = !ref || ALLOWED_SITES.some(site => ref.startsWith(site));
+
+if (!isAllowed) {
+    document.body.innerHTML = `
+        <div style="color: white; background: #000; height: 100vh; display: flex; align-items: center; justify-content: center; font-family: sans-serif;">
+            <div style="text-align: center;">
+                <h1>403 Forbidden</h1>
+                <p>Access Denied for: ${ref || "Direct Access (Blocked)"}</p>
+            </div>
+        </div>`;
+    throw new Error("Unauthorized site: " + ref);
 }
 
 "use strict";
@@ -169,6 +182,7 @@ async function navigateToUrl(inputUrl) {
     currentTab.iframe.go(url);
     updateBookmarkIcon();
 }
+
 
 // Listeners
 form.onsubmit = (e) => { e.preventDefault(); navigateToUrl(addressInput.value); };
