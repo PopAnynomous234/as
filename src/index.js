@@ -86,11 +86,15 @@ function shutdown() {
 	process.exit(0);
 }
 
-let port = parseInt(process.env.PORT || "");
-
-if (isNaN(port)) port = 8080;
+let port = parseInt(process.env.PORT || "10000"); // Render defaults to 10000
 
 fastify.listen({
-	port: port,
-	host: "0.0.0.0",
+    port: port,
+    host: "0.0.0.0",
+}, (err, address) => {
+    if (err) {
+        console.error(err);
+        process.exit(1);
+    }
+    console.log(`Server successfully started at ${address}`);
 });
