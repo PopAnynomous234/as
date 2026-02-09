@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Delta Proxy</title>
+    <title>Codelistener Proxy</title>
 
     <script src="/scram/scramjet.all.js"></script>
     <script src="/baremux/index.js"></script>
@@ -15,6 +15,15 @@
     <link rel="stylesheet" href="index.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <style>
+        :root {
+            --accent: #26ff9a;
+            --bg-dark: #0f1113;
+            --surface: #1e1f22;
+            --toolbar: #2b2d31;
+            --text: #e0e0e0;
+            --text-dim: #888;
+            --tab-width: 180px;
+        }
   .home-screen {
     /* Combined: The gradient (top layer) and the Image (bottom layer) */
     background: radial-gradient(circle at center, rgba(26, 28, 30, 0.4) 0%, rgba(15, 17, 19, 0.9) 100%),
@@ -26,6 +35,7 @@
    
     /* Layout */
     height: 100%;
+    width:100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -121,7 +131,6 @@
     filter: drop-shadow(0 5px 2px #26ff9A);
   }
 }
-
   </style>
   </head>
 
@@ -139,7 +148,7 @@
         </div>
 
         <form id="sj-form">
-            <input id="sj-search-engine" type="hidden" value="https://www.google.com/search?q=%s" />
+            <input id="sj-search-engine" type="hidden" value="https://www.duckduckgo.com/search?q=%s" />
             <input id="sj-address" type="text" placeholder="Search Google or type a URL" autocomplete="off" />
             <button type="button" id="nav-bookmark"><i class="fa-regular fa-star"></i></button>
         </form>
@@ -153,17 +162,17 @@
 <div class="home-screen">
                 <img src="https://cdn.jsdelivr.net/gh/PopAnynomous234/assets/logo.png">
                     <h1>Codelistener <span>Browser</span></h1>
-                    <h3>Privacy is our Goal.</h3>
+                    <h3>Search the web freely.</h3>
                     <br>
                     <div class="bookmarks">
-                        <div class="bookmark" onclick="loadUrl('google.com')"><div class="icon-box"><i class="fa-brands fa-google"></i></div><span>Google</span></div>
-                        <div class="bookmark" onclick="loadUrl('youtube.com')"><div class="icon-box"><i class="fa-brands fa-youtube"></i></div><span>YouTube</span></div>
-                        <div class="bookmark" onclick="loadUrl('tiktok.com')"><div class="icon-box"><i class="fa-brands fa-tiktok"></i></div><span>Tiktok</span></div>
-                        <div class="bookmark" onclick="loadUrl('github.com')"><div class="icon-box"><i class="fa-brands fa-github"></i></div><span>GitHub</span></div>
-                        <div class="bookmark" onclick="loadUrl('xbox.com/en-US/cloud-gaming')"><div class="icon-box"><i class="fa-brands fa-xbox"></i></div><span>Xbox Cloud Gaming</span></div>
-                        <div class="bookmark" onclick="loadUrl('vidplus.to')"><div class="icon-box"><i class="fa-solid fa-video"></i></div><span>Vidplus Movies</span></div>
-                        <div class="bookmark" onclick="loadUrl('twitch.tv')"><div class="icon-box"><i class="fa-brands fa-twitch"></i></div><span>Twitch</span></div>
-                        <div class="bookmark" onclick="loadUrl('discord.com')"><div class="icon-box"><i class="fa-brands fa-discord"></i></div><span>Discord</span></div>
+                        <div class="bookmark" onclick="navigateToUrl('google.com')"><div class="icon-box"><i class="fa-brands fa-google"></i></div><span>Google</span></div>
+                        <div class="bookmark" onclick="navigateToUrl('youtube.com')"><div class="icon-box"><i class="fa-brands fa-youtube"></i></div><span>YouTube</span></div>
+                        <div class="bookmark" onclick="navigateToUrl('tiktok.com')"><div class="icon-box"><i class="fa-brands fa-tiktok"></i></div><span>Tiktok</span></div>
+                        <div class="bookmark" onclick="navigateToUrl('github.com')"><div class="icon-box"><i class="fa-brands fa-github"></i></div><span>GitHub</span></div>
+                        <div class="bookmark" onclick="navigateToUrl('xbox.com/en-US/cloud-gaming')"><div class="icon-box"><i class="fa-brands fa-xbox"></i></div><span>Xbox Cloud Gaming</span></div>
+                        <div class="bookmark" onclick="navigateToUrl('vidplus.to')"><div class="icon-box"><i class="fa-solid fa-video"></i></div><span>Vidplus Movies</span></div>
+                        <div class="bookmark" onclick="navigateToUrl('twitch.tv')"><div class="icon-box"><i class="fa-brands fa-twitch"></i></div><span>Twitch</span></div>
+                        <div class="bookmark" onclick="navigateToUrl('discord.com')"><div class="icon-box"><i class="fa-brands fa-discord"></i></div><span>Discord</span></div>
                      
                     </div>
                 </div>
