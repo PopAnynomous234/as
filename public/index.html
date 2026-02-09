@@ -1,52 +1,173 @@
+
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-		/>
-		<title>C0delistener</title>
-	
-		<script src="/scram/scramjet.all.js"></script>
-		<script src="/baremux/index.js"></script>
-		
-		<link rel="stylesheet" href="index.css" />
-		<script src="register-sw.js" defer></script>
-		<script src="search.js" defer></script>
-		<script src="index.js" defer></script>
-	</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delta Proxy</title>
 
-	<body>
-		<div class="flex-center logo-wrapper header-center">
-			<img class="logo" src="https://cdn.jsdelivr.net/gh/PopAnynomous234/assets/logo.png" />
-			<h1>Faster pr0xy</h1>
-		</div>
-		<div class="flex-center desc left-margin">
-			<p>
-             This version supports Recaptchas and is a lot faster than the last one, and it can run almost anything.
-			</p>
-		</div>
+    <script src="/scram/scramjet.all.js"></script>
+    <script src="/baremux/index.js"></script>
+    <script src="register-sw.js" defer></script>
+    <script src="search.js" defer></script>
+    <script src="index.js" defer></script>
+    
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+  .home-screen {
+    /* Combined: The gradient (top layer) and the Image (bottom layer) */
+    background: radial-gradient(circle at center, rgba(26, 28, 30, 0.4) 0%, rgba(15, 17, 19, 0.9) 100%),
+                url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdOewc3ACIQP0iJOGfMCaFkqZTlUJV9-PW6Q&s');
+   
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+   
+    /* Layout */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
 
-		<form id="sj-form" class="flex-center">
-			<input
-				id="sj-search-engine"
-				value="https://www.duckduckgo.com/search?q=%s"
-				type="hidden"
-			/>
-			<input id="sj-address" type="text" placeholder="Search the web freely" />
-		</form>
-		<div class="desc left-margin">
-			<p id="sj-error"></p>
-			<pre id="sj-error-code"></pre>
-		</div>
-		<footer>
-			<div>
-				<a title="License information" href="credits.html">Credits</a>
-			</div>
-			<div>
-				<span>Codelistener &copy; 2025</span>
-			</div>
-		</footer>
-	</body>
+        .home-screen h1 { font-size: 48px; margin-bottom: 30px; letter-spacing: -2px; }
+.home-screen h3 {
+   color:#26ff9a;
+   
+}
+.home-screen img {
+   width: 150px;
+   height: 150px;
+   /* A 1.2s total cycle (0.6s up, 0.6s down) works well for visibility */
+   animation: up-down-trail 2s ease-in-out infinite;
+}
+
+@keyframes up-down-trail {
+  /* 1. START AT BOTTOM: Moving UP */
+  0% {
+    transform: translateY(0);
+    filter: drop-shadow(0 5px 2px #26ff9A); /* Trail starts behind (at bottom) */
+  }
+
+  /* 2. MID-WAY UP: Peak speed upward */
+  25% {
+    filter: drop-shadow(0 25px 10px #26ff9A); /* Long trail at bottom */
+  }
+
+  /* 3. AT TOP: Switching directions */
+  50% {
+    transform: translateY(-50px);
+    filter: drop-shadow(0 0 5px #26ff9A); /* Trail resets as direction changes */
+  }
+
+  /* 4. MID-WAY DOWN: Peak speed downward */
+  75% {
+    filter: drop-shadow(0 -25px 10px #26ff9A); /* Long trail at TOP */
+  }
+
+  /* 5. BACK AT BOTTOM */
+  100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 5px 2px #26ff9A);
+  }
+}
+
+
+        .home-screen h1 span { color: var(--accent); }
+        .bookmarks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; max-width: 600px; }
+        .bookmark {
+            display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .bookmark:hover { transform: translateY(-5px); }
+        .icon-box {
+            width: 64px; height: 64px; background: var(--surface); border-radius: 16px;
+            display: flex; align-items: center; justify-content: center; font-size: 24px;
+            border: 1px solid rgba(255,255,255,0.05); color: var(--accent);
+        }
+        .bookmark span { font-size: 12px; font-weight: 500; color: var(--text-dim); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
+   
+      @keyframes up-down-trail {
+  /* 1. START AT BOTTOM: Moving UP */
+  0% {
+    transform: translateY(0);
+    filter: drop-shadow(0 5px 2px #26ff9A); /* Trail starts behind (at bottom) */
+  }
+
+  /* 2. MID-WAY UP: Peak speed upward */
+  25% {
+    filter: drop-shadow(0 25px 10px #26ff9A); /* Long trail at bottom */
+  }
+
+  /* 3. AT TOP: Switching directions */
+  50% {
+    transform: translateY(-50px);
+    filter: drop-shadow(0 0 5px #26ff9A); /* Trail resets as direction changes */
+  }
+
+  /* 4. MID-WAY DOWN: Peak speed downward */
+  75% {
+    filter: drop-shadow(0 -25px 10px #26ff9A); /* Long trail at TOP */
+  }
+
+  /* 5. BACK AT BOTTOM */
+  100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 5px 2px #26ff9A);
+  }
+}
+
+  </style>
+  </head>
+
+  <body>
+    <div id="browser-ui">
+      <div id="tabs-strip">
+        <button id="add-tab-btn" title="New Tab"><i class="fa-solid fa-plus"></i></button>
+      </div>
+
+      <div id="nav-bar">
+        <div class="nav-controls">
+          <button id="nav-back"><i class="fa-solid fa-arrow-left"></i></button>
+          <button id="nav-forward"><i class="fa-solid fa-arrow-right"></i></button>
+          <button id="nav-reload"><i class="fa-solid fa-rotate-right"></i></button>
+        </div>
+
+        <form id="sj-form">
+            <input id="sj-search-engine" type="hidden" value="https://www.google.com/search?q=%s" />
+            <input id="sj-address" type="text" placeholder="Search Google or type a URL" autocomplete="off" />
+            <button type="button" id="nav-bookmark"><i class="fa-regular fa-star"></i></button>
+        </form>
+      </div>
+
+      <div id="bookmark-bar"></div>
+    </div>
+
+    <div id="webview-container">
+        <div id="home-template" class="home-view" style="display: none;">
+<div class="home-screen">
+                <img src="https://cdn.jsdelivr.net/gh/PopAnynomous234/assets/logo.png">
+                    <h1>Codelistener <span>Browser</span></h1>
+                    <h3>Privacy is our Goal.</h3>
+                    <br>
+                    <div class="bookmarks">
+                        <div class="bookmark" onclick="loadUrl('google.com')"><div class="icon-box"><i class="fa-brands fa-google"></i></div><span>Google</span></div>
+                        <div class="bookmark" onclick="loadUrl('youtube.com')"><div class="icon-box"><i class="fa-brands fa-youtube"></i></div><span>YouTube</span></div>
+                        <div class="bookmark" onclick="loadUrl('tiktok.com')"><div class="icon-box"><i class="fa-brands fa-tiktok"></i></div><span>Tiktok</span></div>
+                        <div class="bookmark" onclick="loadUrl('github.com')"><div class="icon-box"><i class="fa-brands fa-github"></i></div><span>GitHub</span></div>
+                        <div class="bookmark" onclick="loadUrl('xbox.com/en-US/cloud-gaming')"><div class="icon-box"><i class="fa-brands fa-xbox"></i></div><span>Xbox Cloud Gaming</span></div>
+                        <div class="bookmark" onclick="loadUrl('vidplus.to')"><div class="icon-box"><i class="fa-solid fa-video"></i></div><span>Vidplus Movies</span></div>
+                        <div class="bookmark" onclick="loadUrl('twitch.tv')"><div class="icon-box"><i class="fa-brands fa-twitch"></i></div><span>Twitch</span></div>
+                        <div class="bookmark" onclick="loadUrl('discord.com')"><div class="icon-box"><i class="fa-brands fa-discord"></i></div><span>Discord</span></div>
+                     
+                    </div>
+                </div>
+        </div>
+    </div>
+  </body>
 </html>
