@@ -1,13 +1,20 @@
 #!/bin/sh
+set -e
+
+# Ensure Tailscale directories exist
+mkdir -p /var/lib/tailscale /var/run/tailscale
 
 # Start tailscaled in the background
 tailscaled --tun=userspace-networking --socks5-server=localhost:1055 &
 
-# Wait for tailscaled to be ready, then log in using the Auth Key
-tailscale up --authkey=${TS_AUTHKEY} --hostname=codelistener-proxy
+# Give tailscaled a few seconds to start
+sleep 5
 
-# Turn on the Funnel for port 10000 (Render's port)
+# Authenticate using Tailscale auth key
+tailscale up --authkey="${TS_AUTHKEY}" --hostname=codelistener-proxy
+
+# Enable Funnel for Render's port
 tailscale funnel 10000 on
 
-# Start your Scramjet app
-node src/index.js
+# Start the Node app
+exec node src/index.js
