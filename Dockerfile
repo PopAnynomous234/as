@@ -1,9 +1,11 @@
-FROM node:20-alpine
+FROM node:20-slim
 
-RUN apk add --no-cache \
+# Install curl + required networking tools
+RUN apt-get update && apt-get install -y \
     curl \
+    ca-certificates \
     iptables \
-    ca-certificates
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Tailscale
 RUN curl -fsSL https://tailscale.com/install.sh | sh
