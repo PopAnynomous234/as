@@ -1,21 +1,42 @@
-FROM node:18-alpine
+# Use lightweight Node image
+FROM node:20-alpine
 
-RUN apk add --no-cache ca-certificates tailscale python3 make g++ coreutils && \
-    corepack enable && corepack prepare pnpm@latest --activate
+# Install required packages
+RUN apk add --no-cache \
+    curl \
+    iptables \
+    ca-certificates
 
+# Install Tailscale
+RUN curl -fsSL https://tailscale.com/install.sh | sh
+
+# Set working directory
 WORKDIR /app
 
-COPY ["package.json", "pnpm-lock.yaml*", "./"]
-RUN pnpm install --prod
+# Copy package files first (for better caching)
+COPY package*.json ./
 
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the app
 COPY . .
 
-EXPOSE 10000
+# Render expects this port
+ENV PORT=10000
 
-ENTRYPOINT mkdir -p /var/lib/tailscale /var/run/tailscale && \
-tailscaled --tun=userspace-networking & \
-sleep 5 && \
-tailscale up --authkey="$TS_AUTHKEY" --hostname=codelistener-proxy && \
-tailscale serve --http=10000 && \
-tailscale funnel 10000 && \
+# Start everything correctly
+CMD sh -c '
+echo "Starting tailscaled..."
+tailscaled --tun=userspace-networking --socks5-server=localhost:1055 &
+sleep 5
+
+echo "Logging into Tailscale..."
+tailscale up --authkey=${TS_AUTHKEY} --hostname=codelistener-proxy-2
+
+echo "Enabling Funnel..."
+tailscale funnel --yes 10000 &
+
+echo "Starting Node app..."
 exec node src/index.js
+'
