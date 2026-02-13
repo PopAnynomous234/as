@@ -1,8 +1,10 @@
-# Use Node 20 Alpine
-FROM node:20-alpine
+# Use Node 20 on Debian
+FROM node:20-bullseye
 
 # Install dependencies required by Tailscale
-RUN apk add --no-cache curl bash iptables iproute2
+RUN apt-get update && apt-get install -y \
+    curl iproute2 iptables sudo && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
@@ -15,17 +17,13 @@ RUN npm install
 COPY . .
 
 # Install Tailscale
-RUN curl -fsSL https://tailscale.com/install.sh | bash
+RUN curl -fsSL https://tailscale.com/install.sh | sh
 
 # Environment variables
-# Replace <YOUR_KEY> with your pre-auth key
 ENV TAILSCALE_AUTHKEY=<YOUR_KEY>
 ENV PORT=10000
-
-# Install PM2 to keep server alive
-RUN npm install pm2 -g
 
 # Start Tailscale + Node app
 CMD tailscaled --state=/tailscale/state.sock --tun=userspace-networking & \
     tailscale up --authkey=$TAILSCALE_AUTHKEY --accept-routes --accept-dns --funnel & \
-    pm2 start index.js --name "app" --no-daemon
+    node index.js
