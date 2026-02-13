@@ -1,29 +1,36 @@
-# Use Node 20 on Debian
-FROM node:20-bullseye
+# ===== 1. Base image =====
+FROM node:20-bullseye-slim
 
-# Install dependencies required by Tailscale
+# ===== 2. Install required packages =====
 RUN apt-get update && apt-get install -y \
-    curl iproute2 iptables sudo && \
-    rm -rf /var/lib/apt/lists/*
+    curl \
+    iproute2 \
+    iptables \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+# ===== 3. Install Tailscale =====
+RUN curl -fsSL https://pkgs.tailscale.com/stable/debian/bullseye.gpg | gpg --dearmor -o /usr/share/keyrings/tailscale-archive-keyring.gpg
+RUN curl -fsSL https://pkgs.tailscale.com/stable/debian/bullseye.list | tee /etc/apt/sources.list.d/tailscale.list
+RUN apt-get update && apt-get install -y tailscale
+
+# ===== 4. Set working directory =====
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# ===== 5. Copy package.json and install dependencies =====
 COPY package*.json ./
 RUN npm install
 
-# Copy the rest of your code
+# ===== 6. Copy all project files =====
 COPY . .
 
-# Install Tailscale
-RUN curl -fsSL https://tailscale.com/install.sh | sh
+# ===== 7. Expose the port your Node server listens on =====
+EXPOSE 10000
 
-# Environment variables
-ENV TAILSCALE_AUTHKEY=<YOUR_KEY>
-ENV PORT=10000
-
-# Start Tailscale + Node app
+# ===== 8. Start Tailscale + Node server =====
 CMD tailscaled --state=/tailscale/state.sock --tun=userspace-networking & \
-    tailscale up --authkey=$TAILSCALE_AUTHKEY --accept-routes --accept-dns --funnel & \
+    tailscale up --authkey=$TS_AUTHKEY --accept-routes --accept-dns --funnel & \
     node index.js
