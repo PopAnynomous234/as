@@ -1,7 +1,7 @@
 # ===== 1. Base image =====
 FROM node:20-bullseye-slim
 
-# ===== 2. Install required packages =====
+# ===== 2. Install system dependencies =====
 RUN apt-get update && apt-get install -y \
     curl \
     iproute2 \
@@ -12,25 +12,33 @@ RUN apt-get update && apt-get install -y \
     sudo \
     && rm -rf /var/lib/apt/lists/*
 
-# ===== 3. Install Tailscale =====
-RUN curl -fsSL https://pkgs.tailscale.com/stable/debian/bullseye.gpg | gpg --dearmor -o /usr/share/keyrings/tailscale-archive-keyring.gpg
-RUN curl -fsSL https://pkgs.tailscale.com/stable/debian/bullseye.list | tee /etc/apt/sources.list.d/tailscale.list
-RUN apt-get update && apt-get install -y tailscale
+# ===== 3. Add Tailscale repository and key =====
+RUN curl -fsSL https://pkgs.tailscale.com/stable/debian/bullseye.gpg | gpg --dearmor > /usr/share/keyrings/tailscale-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/debian bullseye main" \
+       > /etc/apt/sources.list.d/tailscale.list
 
-# ===== 4. Set working directory =====
+# ===== 4. Install Tailscale =====
+RUN apt-get update && apt-get install -y tailscale \
+    && rm -rf /var/lib/apt/lists/*
+
+# ===== 5. Set working directory =====
 WORKDIR /app
 
-# ===== 5. Copy package.json and install dependencies =====
+# ===== 6. Copy package files and install Node dependencies =====
 COPY package*.json ./
 RUN npm install
 
-# ===== 6. Copy all project files =====
+# ===== 7. Copy application code =====
 COPY . .
 
-# ===== 7. Expose the port your Node server listens on =====
+# ===== 8. Expose your app port =====
+ENV PORT=10000
 EXPOSE 10000
 
-# ===== 8. Start Tailscale + Node server =====
-CMD tailscaled --state=/tailscale/state.sock --tun=userspace-networking & \
-    tailscale up --authkey=$TS_AUTHKEY --accept-routes --accept-dns --funnel & \
-    node index.js
+# ===== 9. Start Tailscale and Node server =====
+# We will use a small shell script to keep Tailscale up and start your server
+CMD ["sh", "-c", "\
+  tailscaled --tun=userspace-networking --socks5-server=localhost:1055 & \
+  tailscale up --accept-routes --hostname=codelistener --authkey=${TS_AUTHKEY} & \
+  node index.js \
+"]
