@@ -14,12 +14,13 @@ RUN pnpm install --prod
 # Copy app code
 COPY . .
 
-# Copy the start script
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
-
-# Expose your app port
+# Expose port
 EXPOSE 10000
 
-# Start command
-ENTRYPOINT ["/app/start.sh"]
+# Single-line ENTRYPOINT
+ENTRYPOINT mkdir -p /var/lib/tailscale /var/run/tailscale && \
+tailscaled --tun=userspace-networking --socks5-server=localhost:1055 & \
+sleep 5 && \
+tailscale up --authkey="$TS_AUTHKEY" --hostname=codelistener-proxy && \
+tailscale funnel 10000 on && \
+exec node src/index.js
