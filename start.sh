@@ -1,21 +1,31 @@
 #!/bin/sh
 
-# 1. Start the daemon with a state file in memory (important for Render)
-tailscaled --tun=userspace-networking --socks5-server=localhost:1055 --state=mem: &
+# 1. Define where the socket lives
+SOCKET_PATH="/tmp/tailscaled.sock"
 
-# 2. Wait until tailscaled is actually responsive
-until tailscale status >/dev/null 2>&1; do
-  echo "Waiting for tailscaled..."
-  sleep 1
+# 2. Start the daemon with the explicit socket path
+# We also add --state=mem: to avoid disk permission errors
+tailscaled --tun=userspace-networking \
+           --socks5-server=localhost:1055 \
+           --socket=$SOCKET_PATH \
+           --state=mem: &
+
+# 3. Wait for the socket file to actually exist on disk
+echo "Waiting for $SOCKET_PATH to appear..."
+while [ ! -S $SOCKET_PATH ]; do
+  sleep 0.5
 done
 
-# 3. Authenticate and set hostname
-tailscale up --authkey="${TS_AUTHKEY}" --hostname="render-app" --accept-dns=false
+# 4. Run 'up' but point it to the SAME socket
+echo "Socket found! Authenticating..."
+tailscale --socket=$SOCKET_PATH up \
+          --authkey="${TS_AUTHKEY}" \
+          --hostname="render-app" \
+          --accept-dns=false
 
-# 4. Turn on the Funnel 
-# We run this in the background (&) so it doesn't block your app starting
-tailscale funnel 10000 &
+# 5. Start Funnel (pointing to socket again)
+tailscale --socket=$SOCKET_PATH funnel 10000 &
 
-# 5. Start your actual application
-echo "Tailscale is up! Starting Node.js..."
+# 6. Start Node
+echo "Tailscale is ready. Starting Node.js..."
 exec node src/index.js
