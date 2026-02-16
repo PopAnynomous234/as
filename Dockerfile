@@ -2,11 +2,12 @@
 FROM node:20-bullseye-slim
 
 # ===== 2. Install dependencies =====
+# Cleaned up unnecessary packages to reduce image size
 RUN apt-get update && \
-    apt-get install -y curl gnupg2 lsb-release iproute2 iptables sudo ca-certificates && \
+    apt-get install -y curl gnupg2 ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# ===== 3. Install Tailscale using apt with key =====
+# ===== 3. Install Tailscale =====
 RUN curl -fsSL https://pkgs.tailscale.com/stable/debian/bullseye.gpg | gpg --dearmor > /usr/share/keyrings/tailscale-archive-keyring.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/debian bullseye main" | tee /etc/apt/sources.list.d/tailscale.list && \
     apt-get update && \
@@ -18,19 +19,16 @@ WORKDIR /app
 
 # ===== 5. Copy Node project =====
 COPY package*.json ./
-RUN npm install
-COPY src ./src
+RUN npm install --production
+COPY . .
 
-# ===== 6. Expose Node port =====
+# ===== 6. Networking Configuration =====
+# Render's default port is usually 10000
 EXPOSE 10000
 
-# ===== 7. Set environment for Tailscale =====
-ENV TS_AUTH_KEY=TS_AUTHKEY
+# ===== 7. Startup Script =====
+# We move the logic to a script for better signal handling (CTRL+C / SIGTERM)
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-# ===== 8. Start Tailscale and Node =====
-CMD sh -c "\
-    tailscaled --tun=userspace-networking --socks5-server=localhost:1055 & \
-    sleep 5 && \
-    tailscale up --authkey=$TS_AUTH_KEY --hostname=codelistener-proxy-2 --accept-routes --accept-dns & \
-    node src/index.js \
-"
+CMD ["/start.sh"]
