@@ -8,33 +8,33 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Palette — deep space aurora */
-  --void:         #0d0e11;
-  --base:         #13141a;
-  --surface:      #1a1c24;
-  --elevated:     #20222d;
-  --overlay:      #272a36;
-  --border-dim:   #2e3140;
-  --border:       #373b50;
-  --border-lit:   #4a5070;
+  /* Palette — deep space aurora (Mint Variant) */
+  --void:        #0a0c0b;   /* Slightly desaturated toward green */
+  --base:        #111412;
+  --surface:     #171c19;
+  --elevated:    #1e2521;
+  --overlay:     #252e29;
+  --border-dim:  #2d3832;
+  --border:      #36453d;
+  --border-lit:  #465a50;
 
-  /* Aurora accent spectrum */
-  --aurora-1:     #4f8ef7;   /* electric blue */
-  --aurora-2:     #7c5cfc;   /* violet */
-  --aurora-3:     #00c9a7;   /* teal */
-  --aurora-4:     #f7924f;   /* amber */
+  /* Aurora accent spectrum — The #26ff9a Overhaul */
+  --aurora-1:     #26ff9a;   /* Primary Mint */
+  --aurora-2:     #00d4ff;   /* Cyan highlight */
+  --aurora-3:     #b0ff61;   /* Lime highlight */
+  --aurora-4:     #ffffff;   /* Pure white for brilliance */
 
   /* Text */
-  --text-bright:  #f0f2ff;
-  --text:         #c8cce0;
-  --text-muted:   #6b7094;
-  --text-ghost:   #3d4160;
+  --text-bright:  #e6fff4;   /* Tinted with mint */
+  --text:         #c2d1c9;
+  --text-muted:   #688074;
+  --text-ghost:   #3b4a42;
 
   /* Semantic */
   --accent:       var(--aurora-1);
-  --accent-glow:  rgba(79, 142, 247, 0.18);
-  --danger:       #f07070;
-  --danger-bg:    rgba(240, 112, 112, 0.12);
+  --accent-glow:  rgba(38, 255, 154, 0.15); /* Modified for #26ff9a */
+  --danger:       #ff5c5c;
+  --danger-bg:    rgba(255, 92, 92, 0.12);
 
   /* Geometry */
   --r-tab:        8px 8px 0 0;
