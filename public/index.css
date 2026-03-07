@@ -1,106 +1,233 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600&family=Outfit:wght@300;400;500&display=swap");
 
-/* ─── DESIGN TOKENS ─────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════
+   AURORA BROWSER — Premium Dark Theme
+   Performance strategy: transform/opacity only animations (compositor-only),
+   no blur/backdrop-filter, no box-shadow on animated elements.
+   All color transitions on static elements only.
+   ═══════════════════════════════════════════════════════════════════════ */
+
 :root {
-  --bg:           #18191c;
-  --bg-tabs:      #111214;
-  --tab-idle:     #222428;
-  --tab-hover:    #2a2c30;
-  --tab-active:   #2e3035;
-  --toolbar:      #26282c;
-  --border:       #38393d;
-  --accent:       #5b9cf6;
-  --accent-dim:   #3a5fa0;
-  --text:         #e2e4e9;
-  --text-muted:   #888d96;
-  --close-hover:  #e57373;
-  --radius-tab:   7px 7px 0 0;
-  --radius-pill:  20px;
-  --font:         "DM Sans", system-ui, sans-serif;
-  --transition:   120ms ease;
+  /* Palette — deep space aurora */
+  --void:         #0d0e11;
+  --base:         #13141a;
+  --surface:      #1a1c24;
+  --elevated:     #20222d;
+  --overlay:      #272a36;
+  --border-dim:   #2e3140;
+  --border:       #373b50;
+  --border-lit:   #4a5070;
+
+  /* Aurora accent spectrum */
+  --aurora-1:     #4f8ef7;   /* electric blue */
+  --aurora-2:     #7c5cfc;   /* violet */
+  --aurora-3:     #00c9a7;   /* teal */
+  --aurora-4:     #f7924f;   /* amber */
+
+  /* Text */
+  --text-bright:  #f0f2ff;
+  --text:         #c8cce0;
+  --text-muted:   #6b7094;
+  --text-ghost:   #3d4160;
+
+  /* Semantic */
+  --accent:       var(--aurora-1);
+  --accent-glow:  rgba(79, 142, 247, 0.18);
+  --danger:       #f07070;
+  --danger-bg:    rgba(240, 112, 112, 0.12);
+
+  /* Geometry */
+  --r-tab:        8px 8px 0 0;
+  --r-sm:         6px;
+  --r-md:         10px;
+  --r-pill:       100px;
+
+  /* Motion */
+  --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:  cubic-bezier(0.45, 0, 0.55, 1);
+  --t-fast:       90ms;
+  --t-mid:        180ms;
+  --t-slow:       320ms;
+
+  --font-display: "Syne", system-ui, sans-serif;
+  --font-body:    "Outfit", system-ui, sans-serif;
 }
 
-/* ─── RESET / BASE ──────────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
+/* ─── KEYFRAMES (compositor-only: transform + opacity) ──────────────── */
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes tab-in {
+  from { opacity: 0; transform: scaleX(0.85) translateY(4px); transform-origin: left center; }
+  to   { opacity: 1; transform: scaleX(1)    translateY(0);   }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1;    transform: scale(1);    }
+  50%       { opacity: 0.5; transform: scale(0.75); }
+}
+
+@keyframes shimmer-bar {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(400%);  }
+}
+
+@keyframes favicon-spin {
+  from { transform: rotate(0deg);   }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes bookmark-pop {
+  0%   { transform: scale(1);    }
+  40%  { transform: scale(1.35); }
+  70%  { transform: scale(0.9);  }
+  100% { transform: scale(1);    }
+}
+
+@keyframes aurora-drift {
+  0%   { transform: translate(0, 0)    rotate(0deg);   }
+  33%  { transform: translate(4px, -3px) rotate(1deg); }
+  66%  { transform: translate(-3px, 2px) rotate(-1deg);}
+  100% { transform: translate(0, 0)    rotate(0deg);   }
+}
+
+/* ─── BASE ──────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
-  font-family: var(--font);
+  font-family: var(--font-body);
   margin: 0;
-  background: var(--bg);
+  background: var(--void);
   color: var(--text);
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  font-size: 13px;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* ─── BROWSER SHELL ─────────────────────────────────────────────────── */
+
 #browser-ui {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  background: var(--bg);
+  animation: slide-down var(--t-slow) var(--ease-out) both;
 }
 
 /* ─── TAB STRIP ─────────────────────────────────────────────────────── */
+
 #tabs-strip {
   display: flex;
   align-items: flex-end;
-  padding: 7px 6px 0;
-  background: var(--bg-tabs);
-  gap: 2px;
+  padding: 10px 8px 0;
+  background: var(--void);
+  gap: 3px;
   overflow-x: auto;
   scrollbar-width: none;
+  position: relative;
 }
 
-#tabs-strip::-webkit-scrollbar {
-  display: none;
+#tabs-strip::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: var(--border-dim);
 }
+
+#tabs-strip::-webkit-scrollbar { display: none; }
 
 /* ─── TAB ───────────────────────────────────────────────────────────── */
+
 .tab {
   display: flex;
   align-items: center;
-  padding: 7px 14px;
-  background: var(--tab-idle);
-  border-radius: var(--radius-tab);
+  padding: 8px 14px 9px;
+  background: transparent;
+  border-radius: var(--r-tab);
   border: 1px solid transparent;
   border-bottom: none;
-  max-width: 200px;
-  min-width: 116px;
+  max-width: 210px;
+  min-width: 120px;
+  font-family: var(--font-body);
   font-size: 12px;
+  font-weight: 400;
   cursor: pointer;
   user-select: none;
   color: var(--text-muted);
-  transition: background var(--transition), color var(--transition);
-  will-change: auto; /* don't force GPU layer on idle tabs */
+  position: relative;
+  overflow: hidden;
+
+  /* Compositor-only transitions */
+  transition:
+    color         var(--t-mid) var(--ease-out),
+    background    var(--t-mid) var(--ease-out),
+    border-color  var(--t-mid) var(--ease-out),
+    transform     var(--t-fast) var(--ease-out);
+
+  animation: tab-in var(--t-slow) var(--ease-out) both;
+}
+
+/* Tab shimmer on hover — cheap pseudo-element sweep */
+.tab::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255,255,255,0.045) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: transform 0ms;
+  pointer-events: none;
+}
+
+.tab:hover::before {
+  transform: translateX(100%);
+  transition: transform 500ms var(--ease-out);
 }
 
 .tab:hover {
-  background: var(--tab-hover);
+  background: var(--surface);
   color: var(--text);
+  border-color: var(--border-dim);
 }
 
+.tab:active {
+  transform: translateY(1px);
+}
+
+/* Active tab */
 .tab.active {
-  background: var(--tab-active);
+  background: var(--elevated);
   border-color: var(--border);
-  color: var(--text);
-  position: relative;
+  color: var(--text-bright);
   z-index: 2;
+  font-weight: 500;
 }
 
-/* slim accent line on active tab — cheap, zero GPU cost */
+/* Active tab accent line — aurora gradient */
 .tab.active::after {
   content: "";
   position: absolute;
-  top: 0; left: 10px; right: 10px;
+  top: 0; left: 12px; right: 12px;
   height: 2px;
-  background: var(--accent);
-  border-radius: 0 0 2px 2px;
+  background: linear-gradient(90deg, var(--aurora-1), var(--aurora-2));
+  border-radius: 0 0 3px 3px;
+}
+
+/* Active tab — cover the bottom border of strip */
+.tab.active {
+  margin-bottom: -1px;
+  padding-bottom: 10px;
 }
 
 .tab-title {
@@ -109,156 +236,317 @@ body {
   text-overflow: ellipsis;
   flex: 1;
   margin-right: 6px;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.015em;
 }
 
 .tab-close {
   border: none;
   background: transparent;
-  color: var(--text-muted);
+  color: var(--text-ghost);
   cursor: pointer;
   font-size: 11px;
-  padding: 2px 4px;
+  width: 18px;
+  height: 18px;
   border-radius: 4px;
-  line-height: 1;
-  transition: background var(--transition), color var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    background  var(--t-fast),
+    color       var(--t-fast),
+    transform   var(--t-fast);
 }
 
 .tab-close:hover {
-  background: rgba(229, 115, 115, 0.15);
-  color: var(--close-hover);
+  background: var(--danger-bg);
+  color: var(--danger);
+  transform: scale(1.15);
 }
 
-/* ─── ADD-TAB BUTTON ────────────────────────────────────────────────── */
+.tab-close:active {
+  transform: scale(0.9);
+}
+
+/* Loading indicator — dot on tab favicon */
+.tab.loading .tab-favicon {
+  animation: favicon-spin 800ms linear infinite;
+  opacity: 0.6;
+}
+
+/* ─── ADD TAB ───────────────────────────────────────────────────────── */
+
 #add-tab-btn {
   background: transparent;
   border: none;
-  color: var(--text-muted);
-  width: 28px;
-  height: 28px;
+  color: var(--text-ghost);
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   cursor: pointer;
   margin-bottom: 3px;
   flex-shrink: 0;
-  transition: background var(--transition), color var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition:
+    background  var(--t-mid),
+    color       var(--t-mid),
+    transform   var(--t-fast);
 }
 
 #add-tab-btn:hover {
-  background: var(--tab-hover);
+  background: var(--surface);
   color: var(--text);
+  transform: rotate(90deg) scale(1.1);
+}
+
+#add-tab-btn:active {
+  transform: rotate(90deg) scale(0.92);
 }
 
 /* ─── NAV BAR ───────────────────────────────────────────────────────── */
+
 #nav-bar {
-  background: var(--toolbar);
-  padding: 5px 10px;
+  background: var(--base);
+  padding: 7px 10px 6px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  border-bottom: 1px solid var(--border);
+  gap: 6px;
+  border-bottom: 1px solid var(--border-dim);
+  position: relative;
+}
+
+/* Subtle top highlight line */
+#nav-bar::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-lit) 30%, var(--border-lit) 70%, transparent);
+  opacity: 0.5;
 }
 
 /* ─── NAV ICON BUTTONS ──────────────────────────────────────────────── */
+
+.nav-controls {
+  display: flex;
+  gap: 2px;
+}
+
 .nav-controls button,
 #nav-bookmark {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  padding: 5px;
-  border-radius: 50%;
+  padding: 6px;
+  border-radius: var(--r-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background var(--transition), color var(--transition);
+  transition:
+    background  var(--t-mid),
+    color       var(--t-mid),
+    transform   var(--t-fast);
+  position: relative;
 }
 
 .nav-controls button:hover,
 #nav-bookmark:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: var(--text);
+  background: var(--surface);
+  color: var(--text-bright);
 }
 
+.nav-controls button:active,
+#nav-bookmark:active {
+  transform: scale(0.88);
+}
+
+/* Bookmark star active — with pop animation */
 #nav-bookmark.active {
-  color: var(--accent);
+  color: var(--aurora-4);
 }
 
-/* ─── ADDRESS / SEARCH BAR ──────────────────────────────────────────── */
+#nav-bookmark.just-activated {
+  animation: bookmark-pop var(--t-slow) var(--ease-out);
+}
+
+/* ─── ADDRESS BAR ───────────────────────────────────────────────────── */
+
 #sj-form {
   flex: 1;
   display: flex;
   align-items: center;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-pill);
+  gap: 8px;
+  background: var(--void);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-pill);
   padding: 0 14px;
-  height: 30px;
-  transition: border-color var(--transition);
+  height: 32px;
+  position: relative;
+  overflow: hidden;
+  transition:
+    border-color  var(--t-mid),
+    background    var(--t-mid);
+}
+
+/* Shimmer sweep on focus */
+#sj-form::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 60px;
+  background: linear-gradient(90deg, transparent, rgba(79,142,247,0.12), transparent);
+  transform: translateX(-80px);
+  pointer-events: none;
+  transition: none;
 }
 
 #sj-form:focus-within {
-  border-color: var(--accent);
+  border-color: var(--aurora-1);
+  background: var(--base);
+}
+
+#sj-form:focus-within::after {
+  transform: translateX(600px);
+  transition: transform 500ms var(--ease-out);
 }
 
 #sj-address {
   width: 100%;
   background: none;
   border: none;
-  color: var(--text);
-  font-family: var(--font);
+  color: var(--text-bright);
+  font-family: var(--font-body);
   font-size: 13px;
+  font-weight: 400;
   outline: none;
   letter-spacing: 0.01em;
 }
 
+#sj-address::placeholder {
+  color: var(--text-ghost);
+}
+
 #sj-address::selection {
-  background: var(--accent-dim);
+  background: rgba(79, 142, 247, 0.25);
+}
+
+/* Protocol badge */
+#sj-protocol {
+  font-size: 11px;
+  color: var(--aurora-3);
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+/* ─── LOADING BAR ───────────────────────────────────────────────────── */
+
+#loading-bar {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--aurora-1), var(--aurora-2), var(--aurora-3));
+  transition: width 200ms var(--ease-out);
+  pointer-events: none;
+  z-index: 10;
+}
+
+#loading-bar.loading {
+  width: 80%;
+}
+
+#loading-bar.done {
+  width: 100%;
+  opacity: 0;
+  transition: width 150ms, opacity 300ms 100ms;
+}
+
+/* Traveling shimmer on loading bar */
+#loading-bar::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 80px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  animation: shimmer-bar 1.2s linear infinite;
 }
 
 /* ─── BOOKMARK BAR ──────────────────────────────────────────────────── */
+
 #bookmark-bar {
   display: flex;
   align-items: center;
-  background: var(--toolbar);
-  padding: 3px 10px 5px;
-  gap: 2px;
-  border-bottom: 1px solid var(--border);
-  min-height: 26px;
+  background: var(--base);
+  padding: 3px 12px 5px;
+  gap: 1px;
+  border-bottom: 1px solid var(--border-dim);
+  min-height: 28px;
   overflow-x: auto;
   scrollbar-width: none;
 }
 
-#bookmark-bar::-webkit-scrollbar {
-  display: none;
-}
+#bookmark-bar::-webkit-scrollbar { display: none; }
 
 .bookmark-item {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 9px;
-  border-radius: 8px;
+  padding: 3px 10px;
+  border-radius: var(--r-sm);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11.5px;
+  font-weight: 400;
   color: var(--text-muted);
   text-decoration: none;
   background: transparent;
   white-space: nowrap;
-  transition: background var(--transition), color var(--transition);
+  letter-spacing: 0.01em;
+  transition:
+    background  var(--t-mid),
+    color       var(--t-mid),
+    transform   var(--t-fast);
 }
 
 .bookmark-item:hover {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--surface);
   color: var(--text);
+  transform: translateY(-1px);
+}
+
+.bookmark-item:active {
+  transform: translateY(0px);
 }
 
 .bookmark-icon {
-  width: 14px;
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  opacity: 0.75;
+  transition: opacity var(--t-mid);
+}
+
+.bookmark-item:hover .bookmark-icon {
+  opacity: 1;
+}
+
+/* Bookmark bar separator */
+.bookmark-sep {
+  width: 1px;
   height: 14px;
+  background: var(--border-dim);
+  margin: 0 4px;
   flex-shrink: 0;
 }
 
-/* ─── WEBVIEW AREA ──────────────────────────────────────────────────── */
+/* ─── WEBVIEW ───────────────────────────────────────────────────────── */
+
 #webview-container {
   flex: 1;
   position: relative;
@@ -272,35 +560,147 @@ iframe.sj-frame {
   width: 100%;
   height: 100%;
   display: block;
+
+  /* Fade in when new page loads */
+  animation: slide-down var(--t-slow) var(--ease-out) both;
 }
 
-/* ─── HOME / NEW TAB VIEW ───────────────────────────────────────────── */
+/* ─── HOME / NEW TAB PAGE ───────────────────────────────────────────── */
+
 .home-view {
   width: 100%;
   height: 100%;
-  background: var(--bg);
+  background: var(--void);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: var(--text);
-  /* subtle static gradient — zero animation cost */
-  background-image: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(91,156,246,0.07) 0%, transparent 70%);
+  position: relative;
+  overflow: hidden;
 }
 
-/* ─── SCROLLBARS (global) ───────────────────────────────────────────── */
+/* Aurora orbs — CSS only, transform animated (compositor-safe) */
+.home-view::before,
+.home-view::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.home-view::before {
+  width: 500px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(79,142,247,0.08) 0%, transparent 70%);
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: aurora-drift 8s var(--ease-in-out) infinite;
+}
+
+.home-view::after {
+  width: 400px;
+  height: 250px;
+  background: radial-gradient(ellipse, rgba(124,92,252,0.07) 0%, transparent 70%);
+  bottom: -60px;
+  right: 10%;
+  animation: aurora-drift 11s var(--ease-in-out) infinite reverse;
+}
+
+/* Home search bar */
+.home-search {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 0 20px;
+  height: 46px;
+  width: min(580px, 90%);
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+  transition: border-color var(--t-mid), background var(--t-mid);
+}
+
+.home-search:focus-within {
+  border-color: var(--aurora-1);
+  background: var(--elevated);
+}
+
+.home-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-bright);
+  margin-bottom: 28px;
+  position: relative;
+  z-index: 1;
+
+  /* Gradient text — static, no animation cost */
+  background: linear-gradient(135deg, var(--text-bright) 40%, var(--aurora-1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── SCROLLBARS ────────────────────────────────────────────────────── */
+
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
-
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #555; }
+::-webkit-scrollbar           { width: 5px; height: 5px; }
+::-webkit-scrollbar-track     { background: transparent; }
+::-webkit-scrollbar-thumb     { background: var(--border-dim); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border); }
 
 /* ─── FOCUS VISIBLE ─────────────────────────────────────────────────── */
+
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--aurora-1);
   outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* ─── UTILITY ───────────────────────────────────────────────────────── */
+
+/* Status dot (e.g. on tab favicon area) */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--aurora-3);
+  animation: pulse-dot 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* Tooltip */
+[data-tip] {
+  position: relative;
+}
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--overlay);
+  color: var(--text);
+  font-size: 11px;
+  font-family: var(--font-body);
+  padding: 4px 8px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-fast), transform var(--t-fast);
+  z-index: 100;
+}
+[data-tip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
