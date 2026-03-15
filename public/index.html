@@ -131,6 +131,138 @@
     filter: drop-shadow(0 5px 2px #26ff9A);
   }
 }
+
+#nav-inspect {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 0 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
+}
+
+#nav-inspect:hover {
+    color: var(--accent); /* #26ff9a */
+    text-shadow: 0 0 10px var(--accent);
+}
+
+/* Ensure the form doesn't squash the buttons */
+#sj-form {
+    display: flex;
+    align-items: center;
+}
+
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center; z-index: 9999;
+}
+.modal-content {
+    background: var(--surface); border: 1px solid var(--accent);
+    padding: 20px; border-radius: 12px; width: 350px;
+    box-shadow: 0 0 20px rgba(38, 255, 154, 0.2);
+}
+.modal-content h3 { color: var(--accent); margin-top: 0; }
+.modal-content input {
+    width: 100%; background: #000; border: 1px solid #333;
+    color: white; padding: 8px; margin: 10px 0; border-radius: 4px;
+}
+.modal-content input:focus { border-color: var(--accent); outline: none; }
+#bm-save { background: var(--accent); color: black; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+#bm-cancel { background: transparent; color: white; border: none; margin-right: 10px; cursor: pointer; }
+
+/* The Navigation Button */
+#nav-add-bookmark {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 0 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#nav-add-bookmark:hover {
+    color: var(--accent); /* #26ff9a */
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px var(--accent));
+}
+
+/* Modal Styling Enhancements */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* Modal Buttons */
+#bm-save {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+#bm-save:hover {
+    opacity: 0.9;
+    box-shadow: 0 0 15px rgba(38, 255, 154, 0.4);
+}
+
+#bm-cancel {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#bm-cancel:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* The Bookmark Items in the bar */
+.bookmark-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    background: var(--surface);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    max-width: 150px;
+}
+
+.bookmark-item:hover {
+    border-color: var(--accent);
+    background: rgba(38, 255, 154, 0.05);
+}
+
+.bookmark-icon {
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+}
+
+.bookmark-item span {
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text);
+}
   </style>
   </head>
 
@@ -147,14 +279,19 @@
           <button id="nav-reload"><i class="fa-solid fa-rotate-right"></i></button>
         </div>
 
-        <form id="sj-form">
-            <input id="sj-search-engine" type="hidden" value="https://www.duckduckgo.com/search?q=%s" />
-            <input id="sj-address" type="text" placeholder="Search Google or type a URL" autocomplete="off" />
-            <button type="button" id="nav-bookmark"><i class="fa-regular fa-star"></i></button>
-        </form>
+<form id="sj-form">
+    <input id="sj-search-engine" type="hidden" value="https://www.duckduckgo.com/search?q=%s" />
+    <input id="sj-address" type="text" placeholder="Search Google or type a URL" autocomplete="off" />
+    <button type="button" id="nav-bookmark"><i class="fa-regular fa-star"></i></button>
+    <button type="button" id="nav-inspect" title="Developer Tools"><i class="fa-solid fa-code"></i></button>
+<button type="button" id="nav-add-bookmark" title="Create Custom Bookmark">
+    <i class="fa-solid fa-plus-circle"></i>
+</button>
+</form>
       </div>
 
-      <div id="bookmark-bar"></div>
+      <div id="bookmark-bar">
+</div>
     </div>
 
     <div id="webview-container">
@@ -170,7 +307,7 @@
                         <div class="bookmark" onclick="navigateToUrl('tiktok.com')"><div class="icon-box"><i class="fa-brands fa-tiktok"></i></div><span>Tiktok</span></div>
                         <div class="bookmark" onclick="navigateToUrl('github.com')"><div class="icon-box"><i class="fa-brands fa-github"></i></div><span>GitHub</span></div>
                         <div class="bookmark" onclick="navigateToUrl('xbox.com/en-US/cloud-gaming')"><div class="icon-box"><i class="fa-brands fa-xbox"></i></div><span>Xbox Cloud Gaming</span></div>
-                        <div class="bookmark" onclick="navigateToUrl('vidplus.to')"><div class="icon-box"><i class="fa-solid fa-video"></i></div><span>Vidplus Movies</span></div>
+                        <div class="bookmark" onclick="navigateToUrl('chatgpt.com')"><div class="icon-box"><i class="fa-solid fa-microchip"></i></div><span>ChatGPT</span></div>
                         <div class="bookmark" onclick="navigateToUrl('twitch.tv')"><div class="icon-box"><i class="fa-brands fa-twitch"></i></div><span>Twitch</span></div>
                         <div class="bookmark" onclick="navigateToUrl('discord.com')"><div class="icon-box"><i class="fa-brands fa-discord"></i></div><span>Discord</span></div>
                      
@@ -178,5 +315,16 @@
                 </div>
         </div>
     </div>
+<div id="bookmark-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h3>Create Bookmark</h3>
+      <input type="text" id="bm-name" placeholder="Name (e.g., Google)">
+      <input type="text" id="bm-url" placeholder="URL">
+      <div class="modal-actions">
+        <button id="bm-cancel">Cancel</button>
+        <button id="bm-save">Save</button>
+      </div>
+    </div>
+  </div>
   </body>
 </html>
